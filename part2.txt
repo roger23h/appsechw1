@@ -2,8 +2,8 @@ Crash1 - weird symbols get read in as negative numbers, which results in a negat
 Trying to get literally anything in a negative malloc crashes the program.
 
 Further crashes: I can get the reg array in anim to go over the limit, by passing it an argument
-larger than This however does not
-acctually crash everything. I fixed this despite that, which hopefully counts for something.
+larger than This however does not actually crash everything. I fixed this despite that, which hopefully counts for something, as in theory going out of the bounds of an array can cause
+a segmentation fault.
 I attempted:
  - negative gift card size. Unfortunately, putting symbols in with normal characters 
  worked for the first crash, and for here, and nowhere else. It didn't crash though.
