@@ -1,0 +1,4 @@
+# environment variables:
+AFL_KILL_SIGNAL=9
+# command line:
+'afl-fuzz' '-D' '-i' 'testcases/valid' '-o' 'aflout2' '--' './giftcardreader' '@@'

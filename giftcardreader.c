@@ -35,16 +35,32 @@ void animate(char *msg, unsigned char *program) {
             case 0x00:
                 break;
             case 0x01:
-                regs[arg1] = *mptr;
+                if (arg1<16)
+                    regs[arg1] = *mptr;
+                else{
+                    printf("Invalid animation argument! 0x01\n");
+                    exit(1);
+                }
                 break;
             case 0x02:
-                *mptr = regs[arg1];
+                if (arg1<16)
+                    *mptr = regs[arg1];
+                else{
+                    printf("Invalid animation argument! 0x02\n");
+                    exit(1);
+                }
                 break;
             case 0x03:
                 mptr += (char)arg1;
                 break;
             case 0x04:
-                regs[arg2] = arg1;
+                if (arg2<16)
+                    regs[arg2] = arg1;
+                else
+                {
+                    printf("Invalid animation argument! 0x04\n");
+                    exit(1);
+                }
                 break;
             case 0x05:
                 regs[arg1] ^= regs[arg2];
@@ -61,16 +77,19 @@ void animate(char *msg, unsigned char *program) {
                 goto done;
             case 0x09:
                 pc += (char)arg1;
+                printf("%x",arg1);
                 break;
             case 0x10:
                 if (zf) pc += (char)arg1;
                 break;
         }
         pc+=3;
+
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
         // Slow down animation to make it more visible (disabled if fuzzing)
         usleep(5000);
 #endif
+
     }
 done:
     return;
@@ -193,6 +212,11 @@ struct this_gift_card *gift_card_reader(FILE *input_fd) {
 		struct gift_card_data *gcd_ptr;
 		/* JAC: Why aren't return types checked? */
 		fread(&ret_val->num_bytes, 4,1, input_fd);
+        if (ret_val->num_bytes<0)
+        {
+            printf("Invalid file length.");
+            exit(1);
+        }
 
 		// Make something the size of the rest and read it in
 		ptr = malloc(ret_val->num_bytes);
@@ -203,7 +227,7 @@ struct this_gift_card *gift_card_reader(FILE *input_fd) {
 		gcd_ptr = ret_val->gift_card_data = malloc(sizeof(struct gift_card_data));
 		gcd_ptr->merchant_id = ptr;
 		ptr += 32;
-//		printf("VD: %d\n",(int)ptr - (int) gcd_ptr->merchant_id);
+		printf("VD: %d\n",(int)ptr - (int) gcd_ptr->merchant_id);
 		gcd_ptr->customer_id = ptr;
 		ptr += 32;
 		/* JAC: Something seems off here... */
@@ -214,7 +238,7 @@ struct this_gift_card *gift_card_reader(FILE *input_fd) {
 
 		// Now ptr points at the gift card recrod data
 		for (int i=0; i < gcd_ptr->number_of_gift_card_records; i++){
-			//printf("i: %d\n",i);
+			printf("i: %d\n",i);
 			struct gift_card_record_data *gcrd_ptr;
 			gcrd_ptr = gcd_ptr->gift_card_record_data[i] = malloc(sizeof(struct gift_card_record_data));
 			struct gift_card_amount_change *gcac_ptr;
@@ -223,12 +247,12 @@ struct this_gift_card *gift_card_reader(FILE *input_fd) {
 			gcp_ptr = malloc(sizeof(struct gift_card_program));
 
 			gcrd_ptr->record_size_in_bytes = *((char *)ptr);
-            //printf("rec at %x, %d bytes\n", ptr - optr, gcrd_ptr->record_size_in_bytes);
+            printf("rec at %x, %d bytes\n", ptr - optr, gcrd_ptr->record_size_in_bytes);
 			ptr += 4;
-			//printf("record_data: %d\n",gcrd_ptr->record_size_in_bytes);
+			printf("record_data: %d\n",gcrd_ptr->record_size_in_bytes);
 			gcrd_ptr->type_of_record = *((char *)ptr);
 			ptr += 4;
-            //printf("type of rec: %d\n", gcrd_ptr->type_of_record);
+            printf("type of rec: %d\n", gcrd_ptr->type_of_record);
 
 			// amount change
 			if (gcrd_ptr->type_of_record == 1) {
@@ -237,6 +261,7 @@ struct this_gift_card *gift_card_reader(FILE *input_fd) {
 
 				// don't need a sig if negative
 				/* JAC: something seems off here */
+				printf("gcac %x\n",gcac_ptr);
 				if (gcac_ptr < 0) break;
 
 				gcac_ptr->actual_signature = ptr;
@@ -283,6 +308,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "error opening file\n");
         return 1;
     }
+
 	thisone = gift_card_reader(input_fd);
 	if (argv[1][0] == '1') print_gift_card_info(thisone);
     else if (argv[1][0] == '2') gift_card_json(thisone);

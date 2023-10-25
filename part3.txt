@@ -1,0 +1,5 @@
+So I ran the fuzzer on some reasonably variable cases for approximately 3 hours. In this time,
+it got around 30 crashes, and 7 hangs. None of these were replicable at all.
+This is of course after an overnight 12 hour run that got absolutely nothing, because
+I ran it incorrectly as I didn't realize I had to add the 1 to the parameters. I fixed two additional potential go-overs in the animation function, but I don't have a gift card file
+to show the fixes with.

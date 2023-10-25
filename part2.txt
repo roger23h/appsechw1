@@ -1,0 +1,16 @@
+Crash1 - weird symbols get read in as negative numbers, which results in a negative malloc.
+Trying to get literally anything in a negative malloc crashes the program.
+
+Further crashes: I can get the reg array in anim to go over the limit, by passing it an argument
+larger than This however does not
+acctually crash everything. I fixed this despite that, which hopefully counts for something.
+I attempted:
+ - negative gift card size. Unfortunately, putting symbols in with normal characters 
+ worked for the first crash, and for here, and nowhere else. It didn't crash though.
+  - I tried making the amount negative. Symbols didn't work, negative signs didn't work,
+  two's complement didn't work.
+  - I tried making a message length zero, I tried making it long. Neither of those did anything.
+  - I tried making animations go backwords forever; once again ran into the impossibility
+  of negative numbers.
+  - crying for several hours. This worked, but crashed me instead of the program.
+  - asking for help, which did help, but not enough.
