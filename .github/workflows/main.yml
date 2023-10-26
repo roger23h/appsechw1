@@ -1,2 +1,10 @@
-make test
-echo "Hello world"
+name: Appsechw1
+run-name: ${{ github.actor }} 's appsechw1
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: hopefully anywhere
+    steps:
+      - run: echo make test
+      - run: echo "yay?"
+
