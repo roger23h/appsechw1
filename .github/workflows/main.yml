@@ -1,2 +1,2 @@
-
+make test
 echo "Hello world"
